@@ -3,8 +3,6 @@ from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 import emoji
-from spellchecker import SpellChecker
-from nltk.tokenize import TweetTokenizer
 
 
 def check_text(text: str | list[str]) -> list[str]:
@@ -182,8 +180,7 @@ def replace_curly_quotes(text: str | list[str]) -> list[str]:
 
 
 def remove_whitespace_currency(text: str | list[str]) -> list[str]:
-    """Removes whitespaces between unicode currency symbols
-       that occurs due to string tokenization
+    """Removes whitespaces between unicode currency
 
     Args:
         text (str, list): strings to be processed
@@ -204,77 +201,6 @@ def remove_whitespace_currency(text: str | list[str]) -> list[str]:
         # The substitution will replace the found pattern with the
         # currency symbol immediately followed by the number with no space
         processed_text.append(re.sub(pattern, r"\1\2", t))
-
-    return processed_text
-
-
-def fix_spelling(
-    text: str | list[str], distance: int = 1, novel_words: (str | list[str]) = None
-) -> list[str]:
-    """Corrects spellings with a standard English dictionary,
-       plus addditional novel words as specified
-
-    Args:
-        text (str, list): strings to be spell checked
-        distance (int, optional): Levenshtein Distance parameter.
-                                  Defaults to 1.
-        novel_words (str, list, optional): Additional words to be checked for.
-                                           Defaults to None.
-
-    Raises:
-        ValueError: novel_words must be a str or list
-
-    Returns:
-        list: corrected strings
-    """
-
-    text = check_text(text)
-
-    # Initialize TweetTokenizer and SpellChecker
-    tokenizer = TweetTokenizer()
-    spell_checker = SpellChecker(distance=distance)
-
-    if novel_words is not None:
-        if isinstance(novel_words, str):
-            novel_words = [novel_words]
-        elif not (
-            isinstance(novel_words, list)
-            and all(isinstance(s, str) for s in novel_words)
-        ):
-            raise ValueError("novel_words must be a str or list of strings")
-
-        spell_checker.word_frequency.load_words(novel_words)
-
-    processed_text = []
-
-    ordinal_number_pattern = re.compile(r"^\d+(st|nd|rd|th)$", re.IGNORECASE)
-
-    # Process each string in the list
-    for t in text:
-        # Tokenize the string using TweetTokenizer
-        tokens = tokenizer.tokenize(t)
-
-        corrected_tokens = []
-
-        for token in tokens:
-            if (
-                token.startswith("@")
-                or token.startswith("#")
-                or not token.isascii()
-                or ordinal_number_pattern.match(token)
-            ):
-                corrected_tokens.append(token)
-            else:
-                # Correct the token using spell checker
-                corrected_tokens.append(
-                    spell_checker.correction(token)
-                    if spell_checker.correction(token)
-                    else token
-                )
-
-        # Rejoin tokens into a corrected string
-        corrected_string = " ".join(corrected_tokens)
-        processed_text.append(corrected_string)
 
     return processed_text
 
