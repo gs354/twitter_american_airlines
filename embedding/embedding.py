@@ -12,9 +12,9 @@ READ_DIR = "../data/processed"
 
 SAVE_DIR = "../data/processed"
 
-FILENAME = "twitter_airline_sentiment_cleaned_emoji_urls_html_symbols@#_quotes_currency_whitespace"
+FILENAME = "twitter_airline_sentiment_cleaned_emoji_urls_html_symbols@#_quotes_currency_whitespace_3wordtweetdrop"
 
-MODEL_NAMES = ["all-mpnet-base-v2", "Twitter/twhin-bert-base"]
+MODEL_NAMES = ["all-mpnet-base-v2"]
 
 TEXT_COLUMN = "clean_text"
 
@@ -25,9 +25,6 @@ if __name__ == "__main__":
     for model in MODEL_NAMES:
         embedding_model = SentenceTransformer(model)
         encoded_text = embedding_model.encode(df[TEXT_COLUMN])
-
-        if model == "Twitter/twhin-bert-base":
-            model = "twhin-bert-base"
 
         savename = FILENAME + "_" + model
         np.save(join(SAVE_DIR, savename), encoded_text)
