@@ -1,4 +1,4 @@
-Clustering analysis of twitter [data](https://www.kaggle.com/datasets/crowdflower/twitter-airline-sentiment) related to American airlines.
+Clustering analysis of twitter [data](https://www.kaggle.com/datasets/crowdflower/twitter-airline-sentiment) related to American airlines in February 2015.
 
 The tweet text is preprocessed and then passed to a sentence-transformer model to create embeddings to encode semantic content.
 
