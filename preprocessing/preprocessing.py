@@ -1,3 +1,8 @@
+"""
+Functions used to pre-process the Twitter posts.
+Some of the below functions were created by a colleague during another project; others are new or adaptations.
+"""
+
 import re
 from urllib.parse import urlparse
 
