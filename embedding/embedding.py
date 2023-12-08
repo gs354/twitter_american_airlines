@@ -12,7 +12,7 @@ READ_DIR = "../data/processed"
 
 SAVE_DIR = "../data/processed"
 
-FILENAME = "twitter_airline_sentiment_cleaned_emoji_urls_html_symbols@#_quotes_currency_whitespace_3wordtweetdrop"
+FILENAME = "twitter_airline_sentiment_cleaned_emoji_urls_html_symbols@#_quotes_currency_whitespace_3wordtweetdrop_flightspellcorrect"
 
 MODEL_NAMES = ["all-mpnet-base-v2"]
 
