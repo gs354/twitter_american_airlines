@@ -12,6 +12,14 @@ from spellchecker import SpellChecker
 from nltk.tokenize import TweetTokenizer
 
 
+def is_substring_after_punctuation(sentence: str, substring: str) -> bool:
+    # Define the regular expression pattern
+    pattern = re.compile(rf"[.!?]\s*{re.escape(substring)}")
+
+    # Check if the substring comes after punctuation
+    return bool(pattern.search(sentence))
+
+
 def find_incorrect_spellings(
     df: pd.DataFrame, col: str, distance: int = 2
 ) -> pd.DataFrame:
