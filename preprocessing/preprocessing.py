@@ -6,7 +6,90 @@ import re
 from urllib.parse import urlparse
 import pandas as pd
 from bs4 import BeautifulSoup
+import nltk
 import emoji
+from spellchecker import SpellChecker
+from nltk.tokenize import TweetTokenizer
+
+
+def find_incorrect_spellings(
+    df: pd.DataFrame, col: str, distance: int = 2
+) -> pd.DataFrame:
+    """Checks text against words in the SpellChecker corpus
+    and returns a column containing dictionaries where the
+    keys are the potentially misspelled and the values are
+    the suggested correction.
+
+    Args:
+        df: pandas dataframe
+        col: column name on which to operate
+        distance: the maximum edit distance (how many alterations
+        permitted for a correction from the original word)
+
+    Returns:
+        pandas dataframe
+    """
+    # Initialize TweetTokenizer and SpellChecker
+    tokenizer = TweetTokenizer()
+    spell_checker = SpellChecker(distance=distance)
+    ordinal_number_pattern = re.compile(r"^\d+(st|nd|rd|th)$", re.IGNORECASE)
+
+    processed_text = []
+    # Cache suggestions to avoid re-computing corrections
+    suggestions_dict = {}
+    # Process each string in the series
+    counter = 0
+    for t in df[col]:
+        print(counter)
+        # Tokenize the string using TweetTokenizer
+        tokens = tokenizer.tokenize(t)
+        # Reduce to list of unknown words
+        tokens = spell_checker.unknown(tokens)
+        # Store the unusual spellings and potential corrections in a dict
+        unusual_spellings = {}
+        for token in tokens:
+            if (
+                token.startswith("@")
+                or token.startswith("#")
+                or not token.isascii()
+                or ordinal_number_pattern.match(token)
+            ):
+                continue
+            elif token in suggestions_dict:
+                unusual_spellings[token] = suggestions_dict[token]
+            else:
+                spell_checked = spell_checker.correction(token)
+                if token != spell_checked:
+                    unusual_spellings[token] = spell_checked
+                    suggestions_dict[token] = spell_checked
+
+        processed_text.append(unusual_spellings)
+        counter += 1
+
+    df["check_spellings"] = processed_text
+    return df
+
+
+def unusual_words(df: pd.DataFrame, col: str) -> pd.DataFrame:
+    """Checks text against words in the nltk english words corpus
+    and returns a column with the unusual words.
+
+    Args:
+        df: pandas dataframe
+        col: column name on which to operate
+
+    Returns:
+        pandas dataframe
+    """
+    nltk.download("words")
+    english_vocab = set(w.lower() for w in nltk.corpus.words.words())
+    processed_text = []
+    for text in df[col]:
+        text_vocab = set(w.lower() for w in text.split() if w.isalpha())
+        unusual = text_vocab - english_vocab
+        processed_text.append(sorted(unusual))
+    df["unusual_words"] = processed_text
+    return df
 
 
 def remove_emoji(df: pd.DataFrame, col: str, replace: bool = False) -> pd.DataFrame:
