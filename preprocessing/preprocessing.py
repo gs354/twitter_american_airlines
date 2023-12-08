@@ -12,6 +12,33 @@ from spellchecker import SpellChecker
 from nltk.tokenize import TweetTokenizer
 
 
+def replace_substring(
+    df: pd.DataFrame, col: str, str_to_replace: str, replacement: str
+) -> pd.DataFrame:
+    """Replaces a substring with specified replacement word.
+    Capitalisation of first letter of replacement is applied
+    if the str_to_replace starts the string or comes after
+    sentence-ending punctuation.
+
+    Args:
+        df: pandas dataframe
+        col: column name on which to operate
+        str_to_replace: substring to be replaced
+        replacement: replacement string
+
+    Returns:
+        pandas dataframe
+    """
+
+    df[col] = df[col].apply(
+        lambda x: x.replace(str_to_replace, replacement)
+        if not x.startswith(str_to_replace)
+        and not is_substring_after_punctuation(x, str_to_replace)
+        else x.replace(str_to_replace, replacement.title())
+    )
+    return df
+
+
 def is_substring_after_punctuation(sentence: str, substring: str) -> bool:
     # Define the regular expression pattern
     pattern = re.compile(rf"[.!?]\s*{re.escape(substring)}")
