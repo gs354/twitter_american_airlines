@@ -38,9 +38,7 @@ def find_incorrect_spellings(
     # Cache suggestions to avoid re-computing corrections
     suggestions_dict = {}
     # Process each string in the series
-    counter = 0
     for t in df[col]:
-        print(counter)
         # Tokenize the string using TweetTokenizer
         tokens = tokenizer.tokenize(t)
         # Reduce to list of unknown words
@@ -64,7 +62,6 @@ def find_incorrect_spellings(
                     suggestions_dict[token] = spell_checked
 
         processed_text.append(unusual_spellings)
-        counter += 1
 
     df["check_spellings"] = processed_text
     return df
