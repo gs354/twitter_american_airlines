@@ -49,10 +49,7 @@ def is_substring_after_punctuation(sentence: str, substring: str) -> bool:
     Returns:
         bool
     """
-    # Define the regular expression pattern
     pattern = re.compile(rf"[.!?]\s*{re.escape(substring)}")
-
-    # Check if the substring comes after punctuation
     return bool(pattern.search(sentence))
 
 
