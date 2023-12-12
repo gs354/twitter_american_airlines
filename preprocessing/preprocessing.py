@@ -40,6 +40,15 @@ def replace_substring(
 
 
 def is_substring_after_punctuation(sentence: str, substring: str) -> bool:
+    """Checks if substring comes after sentence-ending punctuation.
+
+    Args:
+        sentence (str): text to examine
+        substring (str): substring to test
+
+    Returns:
+        bool
+    """
     # Define the regular expression pattern
     pattern = re.compile(rf"[.!?]\s*{re.escape(substring)}")
 
